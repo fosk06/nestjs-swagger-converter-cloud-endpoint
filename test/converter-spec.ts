@@ -1,24 +1,36 @@
-import { resolve } from 'path'
 import { AppModule } from './sample/src/app.module';
 import { convertOpenAPIV3toV2, converterOptions } from '../lib/index';
+import { INestApplication } from '@nestjs/common';
+import { TestingModule, Test } from '@nestjs/testing';
 
 describe('Tests OPEN api spec generation', () => {
+  let app: INestApplication;
+
+  beforeEach(async () => {
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+      imports: [AppModule],
+    })
+    .compile();
+    app = moduleFixture.createNestApplication();
+    await app.init();
+  });
 
   describe('Test spec generation', function() {
+
       it(`spec is present on file system`, async () => {
         const options: converterOptions = {
-          title: 'Segment io HTTP proxy',
-          description:'Segment io HTTP proxy',
+          title: 'Cats API',
+          description:'Cats API',
           version: '0.1.0',
           specFilePath: `${process.cwd()}/swagger.yaml`,
           host: 'myHost',
           domain: 'myDomain',
           staticIp: '127.0.0.1',
-          securityName: 'firebaseShop',
+          securityName: 'myOauthSecurity',
           authorizationUrl: '',
-          googleIssuerUrl: 'https://securetoken.google.com/supershop',
+          googleIssuerUrl: 'https://securetoken.google.com/myApp',
           googleJwksUri: 'https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com',
-          googleAudiences: 'supershop'
+          googleAudiences: 'myApp'
         }
         const {swaggerObject} = await convertOpenAPIV3toV2(AppModule,options)
         

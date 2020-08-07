@@ -1,5 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication, ValidationPipe, NestModule } from '@nestjs/common';
+import { INestApplication,  } from '@nestjs/common';
 import * as request from 'supertest';
 import {convert}  from 'api-spec-converter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
@@ -47,18 +47,24 @@ function buildOpenAPIDocument(options) {
  * Build the NestJS app for supertest
  */
 async function buildApp(AppModule, options): Promise<INestApplication> {
-    let app: INestApplication;
-    const openAPIoptions = buildOpenAPIDocument(options)
-    
-    const moduleFixture: TestingModule = await Test.createTestingModule({
-        imports: [AppModule],
-    })
-    .compile();
-    
-    app = moduleFixture.createNestApplication();
-    const document = SwaggerModule.createDocument(app, openAPIoptions);
-    SwaggerModule.setup('api', app, document);
-    return app
+    try {
+      let app: INestApplication;
+      const openAPIoptions = buildOpenAPIDocument(options)
+      
+      const moduleFixture: TestingModule = await Test.createTestingModule({
+          imports: [AppModule],
+      })
+      .compile();
+      
+      app = moduleFixture.createNestApplication();
+      const document = SwaggerModule.createDocument(app, openAPIoptions);
+      SwaggerModule.setup('api', app, document);
+      return app
+      
+    } catch (error) {
+      console.error(error);
+    }
+   
 }
 
 /** add the security parameters for GCP cloud endpoints
