@@ -14,7 +14,6 @@
     "url": "git+https://github.com/fosk06/nestjs-swager-converter-cloud-endpoint.git"
   },
   "keywords": [
-    "nestjs",
     "swagger",
     "openapi",
     "cloud-endpoint"
@@ -31,14 +30,7 @@
     "typescript": "^3.9.7"
   },
   "dependencies": {
-    "@nestjs/common": "^7.4.2",
-    "@nestjs/core": "^7.4.2",
-    "@nestjs/swagger": "^4.5.12",
-    "@nestjs/testing": "^7.4.2",
     "api-spec-converter": "^2.11.1",
-    "reflect-metadata": "^0.1.13",
-    "rxjs": "^6.6.2",
-    "supertest": "^4.0.2",
     "yaml": "^1.10.0"
   }
 }
