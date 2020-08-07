@@ -1,6 +1,5 @@
 import { Test, TestingModule } from '@nestjs/testing';
-import { INestApplication,  } from '@nestjs/common';
-import * as request from 'supertest';
+import { INestApplication } from '@nestjs/common';
 import {convert}  from 'api-spec-converter';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import {writeFileSync} from 'fs'
@@ -46,25 +45,18 @@ function buildOpenAPIDocument(options) {
 /** 
  * Build the NestJS app for supertest
  */
-async function buildApp(AppModule, options): Promise<INestApplication> {
-    try {
-      let app: INestApplication;
-      const openAPIoptions = buildOpenAPIDocument(options)
-      
-      const moduleFixture: TestingModule = await Test.createTestingModule({
-          imports: [AppModule],
-      })
-      .compile();
-      
-      app = moduleFixture.createNestApplication();
-      const document = SwaggerModule.createDocument(app, openAPIoptions);
-      SwaggerModule.setup('api', app, document);
-      return app
-      
-    } catch (error) {
-      console.error(error);
-    }
-   
+async function buildSwaggerObjectV3(AppModule, options): Promise<any> {
+    let app: INestApplication;
+    const openAPIoptions = buildOpenAPIDocument(options)
+    
+    const moduleFixture: TestingModule = await Test.createTestingModule({
+        imports: [AppModule],
+    })
+    .compile();
+    
+    app = moduleFixture.createNestApplication();
+    const swaggerObject = SwaggerModule.createDocument(app, openAPIoptions);
+    return {swaggerObject, options}
 }
 
 /** add the security parameters for GCP cloud endpoints
@@ -114,21 +106,16 @@ async function writeSwaggerFile({swaggerObject, options}) {
  */
 export async function convertOpenAPIV3toV2(rootModule, options:converterOptions) {
     
-    const app = await buildApp(rootModule, options)
-    app.init()
-
-    return request(app.getHttpServer())
-    .get(`/api-json`)
-    .then(({body}) => {
+    return buildSwaggerObjectV3(rootModule, options)
+    .then(({swaggerObject}) => {
       return convert({
         from: 'openapi_3',
         to: 'swagger_2',
-        source: body
+        source: swaggerObject
       })
     })
     .then(converted => {
-      const swaggerTwoFile = converted.stringify()
-      const swaggerObject = JSON.parse(swaggerTwoFile);
+      const swaggerObject = converted.spec
       return {swaggerObject, options}
     })
     .then(setHost)
