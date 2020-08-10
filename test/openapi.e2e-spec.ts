@@ -4,14 +4,13 @@ import {swaggerDocument} from './swager3'
 describe('Test spec generation', function() {
 
     const options: converterOptions = {
+      gcpProject: 'my-gcp-project',
+      folderPath: process.cwd(),
       format: formatOptions.json,
       applicationName: `api`,
       host: 'myHost',
       endpointTargetIp: '127.0.0.1',
-      securityName: 'firebaseShop',
-      googleIssuerUrl: 'https://securetoken.google.com/supershop',
-      googleJwksUri: 'https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com',
-      googleAudiences: 'supershop'
+      securityName: 'firebaseShop'
     }
 
     it(`spec object is correct`, async () => {
@@ -27,9 +26,9 @@ describe('Test spec generation', function() {
       expect(swaggerObject.securityDefinitions[options.securityName].type).toBe('oauth2'); 
       expect(swaggerObject.securityDefinitions[options.securityName].flow).toBe('implicit'); 
       expect(swaggerObject.securityDefinitions[options.securityName].authorizationUrl).toBe(''); 
-      expect(swaggerObject.securityDefinitions[options.securityName]['x-google-issuer']).toBe(options.googleIssuerUrl); 
-      expect(swaggerObject.securityDefinitions[options.securityName]['x-google-jwks_uri']).toBe(options.googleJwksUri); 
-      expect(swaggerObject.securityDefinitions[options.securityName]['x-google-audiences']).toBe(options.googleAudiences); 
+      expect(swaggerObject.securityDefinitions[options.securityName]['x-google-issuer']).toBe(`https://securetoken.google.com/${options.gcpProject}`); 
+      expect(swaggerObject.securityDefinitions[options.securityName]['x-google-jwks_uri']).toBe(`https://www.googleapis.com/service_accounts/v1/metadata/x509/securetoken@system.gserviceaccount.com`); 
+      expect(swaggerObject.securityDefinitions[options.securityName]['x-google-audiences']).toBe(options.gcpProject); 
       
       // check gcp endpoint
       expect(swaggerObject['x-google-endpoints']).toContainEqual({name: options.host, target: options.endpointTargetIp})
