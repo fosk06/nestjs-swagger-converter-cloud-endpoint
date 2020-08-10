@@ -1,36 +1,18 @@
-import { ValidateNested, IsDefined, IsString, IsOptional, IsObject } from 'class-validator';
+import * as Joi from 'joi';
 
-export interface Info {
-    title: string;
-    description: string;
-    version: string;
-    contact: any;
-}
 
-export interface Server {
-    url: string;
-}
+export const schema = Joi.object({
+    "swagger": Joi.string().valid('2.0').required(),
+    "info": {
+        "title": Joi.string().required(),
+        "description": Joi.string().required(),
+        "version": Joi.string().required(),
+        "contact": Joi.any().optional()
+    },
+    "host": Joi.string().required(),
+    "basePath": Joi.string().required(),
+    "tags": Joi.array().items(Joi.string()),
+    "definitions": Joi.any(),
+    "paths": Joi.object().required()
 
-export class SwaggerObject {
-
-    @IsDefined()
-    swagger: string;
-    
-    @ValidateNested()
-    info: Info;
-
-    @IsOptional()
-    tags: string[];
-
-    @ValidateNested()
-    servers: Server[];
-
-    @IsDefined()
-    @IsObject()
-    paths: any;
-    
-    @IsOptional()
-    @IsObject()
-    components?: any
-}
-
+});

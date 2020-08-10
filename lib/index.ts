@@ -2,9 +2,7 @@ import 'reflect-metadata';
 import {convert}  from 'api-spec-converter';
 import {writeFileSync} from 'fs'
 import * as YAML from 'yaml'
-import { validate } from 'class-validator';
-import { SwaggerObject } from "./validator";
-import { plainToClass } from 'class-transformer';
+import { schema } from "./validator";
 
 
 export enum formatOptions {
@@ -76,18 +74,16 @@ async function writeSwaggerFile({swaggerObject, options}) {
 }
 
 export async function validateSwaggerObject({swaggerObject, options}) {
-  let swaggerObjectClass = plainToClass(SwaggerObject, swaggerObject); // to convert user plain object a single user. also supports arrays
-  const errors = await validate(swaggerObjectClass, { skipMissingProperties: true });
-  if(errors.length > 0) {
-    console.log(errors);
-    const errorMessage = errors.map((error) => {
-      const [propName] = Object.keys(error.constraints)
-      const message = error.constraints[propName]
-      return message
-    }).join(',')
-    throw new Error(errorMessage);
+  const res = schema.validate(swaggerObject, {allowUnknown: true, abortEarly:false})
+  if(res.error) {
+    let message = 'validation error'
+    if(res.error.details) {
+      message = res.error.details.map(i => i.message).join(',')
+    }
+    throw new Error(message)
+  } else {
+    return {swaggerObject, options}
   }
-  return {swaggerObject, options}
 }
 
 /**
