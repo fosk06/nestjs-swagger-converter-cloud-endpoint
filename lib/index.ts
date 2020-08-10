@@ -25,6 +25,9 @@ export interface converterOptions {
 async function addGCPSecurity({swaggerObject, options}) {
   try {
     const securityName = options.securityName
+    if(!swaggerObject.securityDefinitions) {
+      swaggerObject.securityDefinitions = {}
+    }
     swaggerObject.securityDefinitions[securityName] = {}
     swaggerObject.securityDefinitions[securityName]['type'] = 'oauth2'
     swaggerObject.securityDefinitions[securityName]['flow'] = 'implicit'
