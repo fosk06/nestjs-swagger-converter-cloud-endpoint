@@ -1,6 +1,10 @@
+import 'reflect-metadata';
 import {convert}  from 'api-spec-converter';
 import {writeFileSync} from 'fs'
 import * as YAML from 'yaml'
+import { validate } from 'class-validator';
+import { SwaggerObject } from "./validator";
+import { plainToClass } from 'class-transformer';
 
 
 export enum formatOptions {
@@ -25,7 +29,7 @@ export interface converterOptions {
 async function addGCPSecurity({swaggerObject, options}) {
   try {
     const securityName = options.securityName
-    if(!swaggerObject.securityDefinitions) {
+    if(!!swaggerObject.securityDefinitions === false) { // securityDefinitions not defined
       swaggerObject.securityDefinitions = {}
     }
     swaggerObject.securityDefinitions[securityName] = {}
@@ -71,6 +75,21 @@ async function writeSwaggerFile({swaggerObject, options}) {
   return {swaggerObject,options};
 }
 
+export async function validateSwaggerObject({swaggerObject, options}) {
+  let swaggerObjectClass = plainToClass(SwaggerObject, swaggerObject); // to convert user plain object a single user. also supports arrays
+  const errors = await validate(swaggerObjectClass, { skipMissingProperties: true });
+  if(errors.length > 0) {
+    console.log(errors);
+    const errorMessage = errors.map((error) => {
+      const [propName] = Object.keys(error.constraints)
+      const message = error.constraints[propName]
+      return message
+    }).join(',')
+    throw new Error(errorMessage);
+  }
+  return {swaggerObject, options}
+}
+
 /**
  * @param  {} swaggerObjectV3  the v3 swagger object
  * @param  {string} applicationName the path to save the spec file
@@ -85,6 +104,7 @@ export async function convertOpenAPIV3toV2(swaggerObjectV3, options:converterOpt
       const swaggerObject = converted.spec
       return {swaggerObject, options}
     })
+    .then(validateSwaggerObject)
     .then(setHost)
     .then(addGoogleEndpoints)
     .then(addGCPSecurity)
