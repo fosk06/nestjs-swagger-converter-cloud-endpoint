@@ -1,6 +1,6 @@
 {
-  "name": "@prestashopcorp/nestjs-swagger-converter-cloud-endpoint",
-  "version": "1.0.0",
+  "name": "nestjs-swagger-converter-cloud-endpoint",
+  "version": "1.0.2",
   "description": "Convert OpenAPI V3 to Swagger V2 file compatible with GCP cloud endpoint",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",

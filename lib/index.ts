@@ -25,6 +25,10 @@ export interface converterOptions {
 async function addGCPSecurity({swaggerObject, options}) {
   try {
     const securityName = options.securityName
+    swaggerObject.securityDefinitions[securityName] = {}
+    swaggerObject.securityDefinitions[securityName]['type'] = 'oauth2'
+    swaggerObject.securityDefinitions[securityName]['flow'] = 'implicit'
+    swaggerObject.securityDefinitions[securityName]['authorizationUrl'] = ''
     swaggerObject.securityDefinitions[securityName]['x-google-issuer'] = options.googleIssuerUrl;
     swaggerObject.securityDefinitions[securityName]['x-google-jwks_uri'] = options.googleJwksUri;
     swaggerObject.securityDefinitions[securityName]['x-google-audiences'] = options.googleAudiences;
