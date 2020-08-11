@@ -1,6 +1,6 @@
 {
   "name": "nestjs-swagger-converter-cloud-endpoint",
-  "version": "1.0.5",
+  "version": "1.0.6",
   "description": "Convert OpenAPI V3 to Swagger V2 file compatible with GCP cloud endpoint",
   "main": "dist/lib/index.js",
   "types": "dist/lib/index.d.ts",
@@ -25,6 +25,7 @@
   },
   "homepage": "https://github.com/fosk06/nestjs-swagger-converter-cloud-endpoint#readme",
   "devDependencies": {
+    "@types/jest": "^26.0.9",
     "jest": "^26.2.2",
     "ts-jest": "^26.1.4",
     "typescript": "^3.9.7"
@@ -32,7 +33,6 @@
   "dependencies": {
     "api-spec-converter": "^2.11.1",
     "joi": "^17.2.0",
-    "reflect-metadata": "^0.1.13",
     "yaml": "^1.10.0"
   }
 }
